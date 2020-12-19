@@ -180,7 +180,7 @@ try:
 except:
     pass  
 
-toolbox.register("attribute", random.uniform, -4,4)
+toolbox.register("attribute", random.random)
 toolbox.register("attribute0", random.uniform, 0,0)
 toolbox.register("individual", tools.initRepeat, creator.Individual,
                  toolbox.attribute, n=IND_SIZE)
@@ -197,7 +197,7 @@ toolbox.register("environ_select", tools.selBest)
 
 def optimize_redistribute():
     print("Initialization")
-    pop = toolbox.population(n=19)
+    pop = toolbox.population(n=9)
     ind0 = toolbox.individual0()
     pop.append(ind0)
 
@@ -210,8 +210,12 @@ def optimize_redistribute():
     # Variable keeping track of the number of generations
     g = 0
     
+    max_fitnesses = [] #record maximal fitnesses of every generation
+    mean_fitnesses = [] #record mean fitnesses of every generation
     min_fitnesses = [] #record minimal fitnesses of every generation
     min_fitnesses.append(min(fits))
+    max_fitnesses.append(max(fits))
+    mean_fitnesses.append(sum(fits)/len(fits))
     
     # Begin the evolution
     while g < 10:
@@ -232,7 +236,7 @@ def optimize_redistribute():
                 
         for mutant in offspring:
             #print(mutant)
-            toolbox.mutate(mutant,0, 4, 0.2)
+            toolbox.mutate(mutant,0, abs(sum(mutant)/len(mutant)), 0.2)
             del mutant.fitness.values
         
         # Evaluate the individuals with an invalid fitness
@@ -253,17 +257,28 @@ def optimize_redistribute():
         sum2 = sum(x*x for x in fits)
         std = abs(sum2 / length - mean**2)**0.5
         
+        min_fitnesses.append(min(fits))
+        mean_fitnesses.append(max(fits))
+        max_fitnesses.append(mean)
+                
         print("  Min %s" % min(fits))
         print("  Max %s" % max(fits))
         print("  Avg %s" % mean)
         print("  Std %s" % std)
+
+    
+    with open("min_fitnesses_redistribution.pkl", "wb") as f:
+        pickle.dump(min_fitnesses, f)
+
+    with open("max_fitnesses_redistribution.pkl","wb") as f:
+        pickle.dump(max_fitnesses, f)
+
+    with open("mean_fitnesses_redistribution.pkl","wb") as f:
+        pickle.dump(mean_fitnesses, f)
         
-    return min_fitnesses
+    return min_fitnesses, mean_fitnesses, max_fitnesses
 
-min_fitnesses = optimize_redistribute()
 
-save_name = "original_optimization_minimals_%d"%(N)
+optimize_redistribute()
 
-with open(save_name, "wb") as f:
-    pickle.dump(min_fitnesses, f)
 
