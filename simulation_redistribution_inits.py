@@ -167,11 +167,11 @@ def optimize_redistribution_initStrategy():
     pop = []#population
     ind0 = creator.Individual([0]*IND_SIZE) #individual without redistribution
     pop.append(ind0)
-    for i in range(5):
+    for i in range(10):
         #individuals adding weights to high density edges
         indi = creator.Individual(generate_weights0(edge_densities_20))
         pop.append(indi)
-    for j in range(4):
+    for j in range(9):
         #individuals reducing weights from low density edges
         indj = creator.Individual(generate_weights1(edge_densities_20))
         pop.append(indj)
@@ -195,7 +195,7 @@ def optimize_redistribution_initStrategy():
     
     
     # Begin the evolution
-    while g < 11:
+    while g < 20:
         # A new generation
         g = g + 1
         print("-- Generation %i --" % g)
@@ -213,7 +213,7 @@ def optimize_redistribution_initStrategy():
                 
         for mutant in offspring:
             #print(mutant)
-            toolbox.mutate(mutant,0, abs(sum(mutant)/len(mutant)), 0.2)
+            toolbox.mutate(mutant,0, abs((sum(mutant))+1/len(mutant)), 0.2)
             del mutant.fitness.values
         
         # Evaluate the individuals with an invalid fitness
