@@ -71,7 +71,7 @@ def generate_weights1(edge_densities, rc=22.1):
         if d==0:
             w.append(-0.01)
         elif d< 22.1:
-            w.append(random.uniform(-(22.1/d),0))
+            w.append(random.uniform(-(rc/d),0))
         else:
             w.append(0)
 
